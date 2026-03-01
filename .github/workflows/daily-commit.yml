@@ -1,0 +1,42 @@
+name: Daily Automated Commit
+
+on:
+  schedule:
+    # Runs every day at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Configure git user
+        run: |
+          git config user.name "DevSync Bot"
+          git config user.email "22f3002016@ds.study.iitm.ac.in"
+
+      - name: Update daily status (22f3002016@ds.study.iitm.ac.in)
+        run: |
+          echo "Last run: $(date -u)" > .devsync_daily_status.txt
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git add .devsync_daily_status.txt
+            git commit -m "chore: daily automated commit"
+          fi
+
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          branch="${GITHUB_REF#refs/heads/}"
+          git push origin "$branch"
