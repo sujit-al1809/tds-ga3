@@ -1,0 +1,30 @@
+name: Playwright Table Scraper - 22f3002016@ds.study.iitm.ac.in
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/scrape_tables.js'
+      - '.github/workflows/scrape-tables.yml'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright and dependencies (22f3002016@ds.study.iitm.ac.in)
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install chromium --with-deps
+
+      - name: Run table scraper and print total (22f3002016@ds.study.iitm.ac.in)
+        run: node scripts/scrape_tables.js
